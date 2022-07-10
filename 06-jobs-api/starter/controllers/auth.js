@@ -1,30 +1,44 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
-const { BadRequestError } = require('../errors');
-const bcrypt = require('bcryptjs');
+const { BadRequestError, UnauthenticatedError } = require('../errors');
 
 const register = async (req, res) => {
-  const { name, email, password } = req.body;
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const tempUser = { name, email, password: hashedPassword };
-
-  if (!name || !email || !password) {
-    throw new BadRequestError('Please provide name, email, password');
-  }
-  const user = await User.create(tempUser);
-  res.status(StatusCodes.CREATED).json({ user });
+  const user = await User.create({ ...req.body });
+  res.status(StatusCodes.CREATED).json({
+    token: user.createJWT(),
+    user: { name: user.name, email: user.email },
+  });
 };
 
 const login = async (req, res) => {
-  res.send('Login user');
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError('Please provide email and passwor !');
+  }
+
+  // Comapre email
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new UnauthenticatedError('Invalid Credentails');
+  }
+
+  // Compare password
+
+  const isPasswordCorrect = await user.comparePassword(password, user.password);
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError('Invalid Credentails');
+  }
+
+  const token = user.createJWT();
+  res
+    .status(StatusCodes.OK)
+    .json({ user: { name: user.name, email: user.email }, token });
 };
 
 module.exports = {
   register,
   login,
 };
-
 
 // 7:15:37
 
