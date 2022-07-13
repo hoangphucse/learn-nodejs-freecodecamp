@@ -1,0 +1,4 @@
+- Học được cách sử dụng express-file-upload
+- Lưu file ở server folder,(public)
+- Lưu file ở cloudinary
+- remove temp file khi upload (cloudinary lưu temp file)
