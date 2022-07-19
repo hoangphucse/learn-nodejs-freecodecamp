@@ -6,7 +6,7 @@ const total_amount = 10998;
 const shipping_fee = 1099;
 
 var stripe = Stripe(
-  'pk_test_51I87djFp5pnuKUXgBVIHiR36vVAWyfuyb7ckrhgyDNA1kM0GWHas9ZGUAgwJSFNUxrbyE6NwlMNmls1iGSfzHDdE00DQB3y6AH'
+  'pk_test_51LL2wnKb0QAJcxOszzZfh1r0D5oq8Ap0SfL3KY8BG35Dz7HRRnmf7nngDNq3jNwgGWMZ5DLscxiNl4v9PyqYbFsq00fKphqdw8'
 );
 
 // The items the customer wants to buy
@@ -87,7 +87,7 @@ var payWithCard = function (stripe, card, clientSecret) {
 
 /* ------- UI helpers ------- */
 
-// Shows a success message when the payment is complete
+// Shows a success message when the payment i s complete
 var orderComplete = function (paymentIntentId) {
   loading(false);
   document
