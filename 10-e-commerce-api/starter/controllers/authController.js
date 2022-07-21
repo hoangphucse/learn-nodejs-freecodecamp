@@ -1,7 +1,7 @@
 const User = require('../model/User');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
-const { attachCookiesToResponse } = require('../utils');
+const { attachCookiesToResponse, createTokenUser } = require('../utils');
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -26,7 +26,7 @@ const login = async (req, res) => {
     throw new CustomError.UnauthenticatedError('Invalid Credentials !');
   }
 
-  const tokenUser = { name: user.name, role: user.role, userId: user._id };
+  const tokenUser = createTokenUser(user);
 
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.OK).json({ user: tokenUser });
