@@ -17,14 +17,15 @@ router
   .route('/')
   .get(getAllProducts)
   .post([authenticateUser, authorizePermissions('ADMIN'), createProduct]);
+
+router
+  .route('/upload-images/:id')
+  .post([authenticateUser, authorizePermissions('ADMIN'), uploadImage]);
+
 router
   .route('/:id')
   .get(getProduct)
   .patch([authenticateUser, authorizePermissions('ADMIN'), updateProduct])
   .delete([authenticateUser, authorizePermissions('ADMIN'), deleteProduct]);
-router
-  .route('/upload-images')
-  .post([authenticateUser, authorizePermissions('ADMIN'), uploadImage]);
 
 module.exports = router;
- 
