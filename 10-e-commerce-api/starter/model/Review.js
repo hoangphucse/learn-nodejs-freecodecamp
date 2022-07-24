@@ -33,6 +33,47 @@ const ReviewSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+// Only create one comment for each user
 ReviewSchema.index({ product: 1, user: 1 }, { unique: true });
+
+// Can call in model not instance
+ReviewSchema.statics.calculateAverageRating = async function (productId) {
+  const result = await this.aggregate([
+    {
+      $match: {
+        product: productId,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        averageRating: {
+          $avg: '$rating',
+        },
+        numberOfReview: {
+          $sum: 1,
+        },
+      },
+    },
+  ]);
+  try {
+    await this.model('Product').findOneAndUpdate(
+      { _id: productId },
+      {
+        averageRating: Math.ceil(result[0]?.averageRating || 0),
+        numberOfReview: result[0]?.numberOfReview || 0,
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+ReviewSchema.post('save', async function () {
+  await this.constructor.calculateAverageRating(this.product);
+});
+ReviewSchema.post('remove', async function () {
+  await this.constructor.calculateAverageRating(this.product);
+});
 
 module.exports = mongoose.model('Review', ReviewSchema);
